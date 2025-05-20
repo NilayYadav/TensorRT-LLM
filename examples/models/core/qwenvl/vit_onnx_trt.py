@@ -73,7 +73,7 @@ class ONNX_TRT:
         if not os.path.exists("image.pt"):
             torch.save(image, "image.pt")
 
-        model_visual = model.transformer.visual
+        model_visual = model.get_model().vision_tower
         model_visual.eval()
         del model  # To save GPU memory
 
