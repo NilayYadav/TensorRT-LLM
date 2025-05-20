@@ -23,7 +23,7 @@ import torch
 from PIL import Image
 from torchvision import transforms
 from torchvision.transforms import InterpolationMode
-from transformers import AutoModelForCausalLM
+from transformers import Qwen2VLForConditionalGeneration
 
 from tensorrt_llm._utils import release_gc, str_dtype_to_torch
 
@@ -63,13 +63,11 @@ class ONNX_TRT:
         print("Start converting ONNX model!")
         image_pre_obj = Preprocss(self.image_size)
         torch_dtype = str_dtype_to_torch("float16")
-        model = AutoModelForCausalLM.from_pretrained(
+        model = Qwen2VLForConditionalGeneration.from_pretrained(
             pretrained_model_path,
-            device_map="cuda",
-            torch_dtype=torch_dtype,
-            fp16=True,
-            trust_remote_code=True,
-        ).eval()
+            torch_dtype=torch.float16,
+            device_map="auto", 
+        )
         device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
         image = image_pre_obj.encode(image_url).to(device)
         if not os.path.exists("image.pt"):
